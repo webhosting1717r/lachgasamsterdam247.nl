@@ -334,12 +334,17 @@ def nav_html(current):
     return "".join(out)
 
 
+import brand  # noqa: E402
+
+LOGO_HTML = brand.mark_inline() + '<span class="logo-t">LACHGAS<span>AMSTERDAM</span></span><b>247</b>'
+
+
 def footer_html():
     stads = "".join('<li><a href="/bezorggebied/%s/">Lachgas %s</a></li>' % (s, esc(n)) for s, n in STADSDELEN)
     regio = "".join('<li><a href="/bezorggebied/%s/">Lachgas %s</a></li>' % (s, esc(n)) for s, n in REGIO)
     tanks = "".join('<li><a href="/lachgas-tanks/%s/">%s</a></li>' % (s, esc(n)) for s, n in TANKS)
     return ('<footer class="site-footer"><div class="wrap"><div class="foot-grid">'
-            '<div><a class="logo" href="/">LACHGAS<span>AMSTERDAM-247</span></a>'
+            '<div><a class="logo" href="/" aria-label="%(brand)s">%(logo)s</a>'
             '<p style="margin-top:.75rem">Lachgas Amsterdam bestellen: 24/7 bereikbaar via WhatsApp en telefoon, bezorging in heel Amsterdam en omstreken, doorgaans binnen 20 tot 30 minuten. Uitsluitend voor volwassenen (18+).</p>'
             '<ul><li><a href="tel:%(tel)s">%(phone)s</a></li><li><a href="%(wa)s" target="_blank" rel="noopener">WhatsApp</a></li>'
             '<li><a href="mailto:%(email)s">%(email)s</a></li><li style="color:var(--muted);padding:.4rem 0;font-size:.95rem">Bereikbaar: 24/7</li></ul></div>'
@@ -358,7 +363,7 @@ def footer_html():
             '</ul></div></div>'
             '<div class="foot-bottom">&copy; 2026 %(brand)s. Alle rechten voorbehouden. Lachgas is uitsluitend bestemd voor volwassenen (18+).</div>'
             '</div></footer>'
-            % {"tel": PHONE_TEL, "phone": PHONE_DISPLAY, "wa": WA_DEFAULT, "email": EMAIL,
+            % {"brand": BRAND, "logo": LOGO_HTML, "tel": PHONE_TEL, "phone": PHONE_DISPLAY, "wa": WA_DEFAULT, "email": EMAIL,
                "stads": stads, "regio": regio, "tanks": tanks, "brand": BRAND})
 
 
@@ -435,6 +440,7 @@ def render(page):
         ]
     head += [
         '<link rel="icon" href="/favicon.ico" sizes="48x48">',
+        '<link rel="icon" href="/images/logo.svg" type="image/svg+xml">',
         '<link rel="icon" href="/images/icon-192.png" type="image/png" sizes="192x192">',
         '<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">',
         '<link rel="manifest" href="/manifest.webmanifest">',
@@ -447,7 +453,7 @@ def render(page):
         "<body>",
         '<a class="skip" href="#main">Ga naar inhoud</a>',
         '<header class="site-header"><div class="wrap header-in">'
-        '<a class="logo" href="/" aria-label="%s, naar de homepage">LACHGAS<span>AMSTERDAM-247</span></a>' % BRAND,
+        '<a class="logo" href="/" aria-label="%s, naar de homepage">%s</a>' % (BRAND, LOGO_HTML),
         '<div class="header-cta"><a class="btn btn-wa btn-sm" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
         '<a class="btn btn-call btn-sm hide-sm" href="tel:%s">Bel %s</a></div></div></header>' % (WA_DEFAULT, PHONE_TEL, PHONE_DISPLAY),
         nav_html(path),
