@@ -2,6 +2,7 @@
 """Productpagina's: lachgas tanks in verschillende maten."""
 from common import (SITE, BUSINESS_ID, PHONE_DISPLAY, PHONE_TEL, WA_ORDER, TANKS, esc, hero, checks, steps, facts,
                     faq_html, cta_block, toc, phone_link, wa_link, wa)
+import brand
 
 PRODUCTS = {}
 
@@ -203,8 +204,8 @@ def overview_page():
             for i, (s, n) in enumerate(TANKS)
         ],
     }]
-    cards = ('<div class="cards">' + "".join(
-        '<div class="card"><h3><a href="/lachgas-tanks/%s/">%s</a></h3><p>%s</p><a class="btn btn-call" href="/lachgas-tanks/%s/">Bekijk de %s tank</a></div>'
+    cards = ('<div class="cards tanks">' + "".join(
+        '<div class="card"><div class="tank-art" aria-hidden="true">' + brand.bottle_inline() + '</div><h3><a href="/lachgas-tanks/%s/">%s</a></h3><p>%s</p><a class="btn btn-call" href="/lachgas-tanks/%s/">Bekijk de %s tank</a></div>'
         % (s, esc(PRODUCTS[s]["name"]), PRODUCTS[s]["lead"].split(". ")[0] + ".", s, PRODUCTS[s]["short"]) for s, _ in TANKS) + "</div>")
     body = [
         hero(page, "Lachgas tanks · 24/7 bezorgd", ["Drie maten: 2 kg, 4 kg en 10 kg", "Doorgaans bezorgd binnen 20 tot 30 minuten", "Prijs vooraf bevestigd", "Uitsluitend voor volwassenen (18+)"]),

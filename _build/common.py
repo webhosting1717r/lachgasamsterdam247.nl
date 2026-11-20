@@ -13,6 +13,7 @@ BRAND = "Lachgasamsterdam-247"
 EMAIL = "info@lachgasamsterdam-247.nl"
 PHONE_DISPLAY = "+31 6 84 69 51 84"
 PHONE_TEL = "+31684695184"
+PHONE_NW = '<span class="nw">%s</span>' % PHONE_DISPLAY  # in lopende tekst: nummer breekt niet af (alleen een span)
 WA_NUMBER = "447441484283"
 TODAY = "2026-09-29"
 CSS_VERSION = "20260929"
@@ -336,6 +337,14 @@ def nav_html(current):
 
 import brand  # noqa: E402
 
+HORIZON = brand.horizon_html()
+
+SPECULATION = ('<script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},'
+               '{"not":{"selector_matches":"[target=_blank]"}}]},"eagerness":"moderate"}]}</script>')
+
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.js"), encoding="utf-8") as _f:
+    JS = "".join(line.strip() for line in _f if line.strip() and not line.strip().startswith("//"))
+
 LOGO_HTML = brand.mark_inline() + '<span class="logo-t">LACHGAS<span>AMSTERDAM</span></span><b>247</b>'
 
 
@@ -344,12 +353,12 @@ def footer_html():
     regio = "".join('<li><a href="/bezorggebied/%s/">Lachgas %s</a></li>' % (s, esc(n)) for s, n in REGIO)
     tanks = "".join('<li><a href="/lachgas-tanks/%s/">%s</a></li>' % (s, esc(n)) for s, n in TANKS)
     return ('<footer class="site-footer"><div class="wrap"><div class="foot-grid">'
-            '<div><a class="logo" href="/" aria-label="%(brand)s">%(logo)s</a>'
-            '<p style="margin-top:.75rem">Lachgas Amsterdam bestellen: 24/7 bereikbaar via WhatsApp en telefoon, bezorging in heel Amsterdam en omstreken, doorgaans binnen 20 tot 30 minuten. Uitsluitend voor volwassenen (18+).</p>'
-            '<ul><li><a href="tel:%(tel)s">%(phone)s</a></li><li><a href="%(wa)s" target="_blank" rel="noopener">WhatsApp</a></li>'
-            '<li><a href="mailto:%(email)s">%(email)s</a></li><li style="color:var(--muted);padding:.4rem 0;font-size:.95rem">Bereikbaar: 24/7</li></ul></div>'
+            '<div class="foot-brand"><a class="logo" href="/" aria-label="%(brand)s">%(logo)s</a>'
+            '<p class="foot-about">Lachgas Amsterdam bestellen: 24/7 bereikbaar via WhatsApp en telefoon, bezorging in heel Amsterdam en omstreken, doorgaans binnen 20 tot 30 minuten. Uitsluitend voor volwassenen (18+).</p>'
+            '<ul class="foot-contact"><li><a href="tel:%(tel)s">%(phone)s</a></li><li><a href="%(wa)s" target="_blank" rel="noopener">WhatsApp</a></li>'
+            '<li><a href="mailto:%(email)s">%(email)s</a></li><li class="foot-open">Bereikbaar: 24/7</li></ul></div>'
             '<div><h2>Stadsdelen</h2><ul>%(stads)s</ul></div>'
-            '<div><h2>Regio</h2><ul>%(regio)s</ul><h2 style="margin-top:1.25rem">Tanks</h2><ul>%(tanks)s</ul></div>'
+            '<div><h2>Regio</h2><ul>%(regio)s</ul><h2 class="foot-h2">Tanks</h2><ul>%(tanks)s</ul></div>'
             '<div><h2>Meer</h2><ul>'
             '<li><a href="/lachgas-tanks/">Lachgas tanks en maten</a></li>'
             '<li><a href="/zakelijk/">Horeca, feesten en evenementen</a></li>'
@@ -370,8 +379,18 @@ def footer_html():
 WA_SVG = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.372a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.883 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>')
 
 
+def minify_css(src):
+    """Kleine, veilige CSS-verkleiner: commentaar weg, regels samenvoegen, witruimte rond { } ; weg."""
+    src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
+    src = "".join(line.strip() + (" " if line.strip().endswith(",") else "") for line in src.splitlines() if line.strip())
+    src = re.sub(r"\s*([{};])\s*", r"\1", src)
+    src = re.sub(r",\s+", ",", src)
+    src = src.replace(";}", "}")
+    return src.replace("}", "}\n").strip()
+
+
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.css"), encoding="utf-8") as _f:
-    CSS = "".join(line.strip() + ("\n" if line.strip().endswith("}") else "") for line in _f if line.strip()).strip()
+    CSS = minify_css(_f.read())
 
 
 def page_body(page):
@@ -411,7 +430,7 @@ def render(page):
             '<link rel="alternate" hreflang="x-default" href="%s">' % url,
         ]
     head += [
-        '<meta name="theme-color" content="#070c17">',
+        '<meta name="theme-color" content="#000000">',
         '<meta name="color-scheme" content="dark">',
         '<meta name="author" content="%s">' % BRAND,
         '<meta name="geo.region" content="NL-NH">',
@@ -445,18 +464,19 @@ def render(page):
         '<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">',
         '<link rel="manifest" href="/manifest.webmanifest">',
         '<link rel="sitemap" type="application/xml" href="/sitemap.xml">',
-        '<link rel="preload" href="/fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>',
+        '<link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>',
         '<meta name="apple-mobile-web-app-title" content="%s">' % BRAND,
         "<style>%s</style>" % CSS,
         '<script type="application/ld+json">%s</script>' % jsonld(page),
+        SPECULATION,
         "</head>",
         "<body>",
         '<a class="skip" href="#main">Ga naar inhoud</a>',
-        '<header class="site-header"><div class="wrap header-in">'
+        '<div class="top"><header class="site-header"><div class="wrap header-in">'
         '<a class="logo" href="/" aria-label="%s, naar de homepage">%s</a>' % (BRAND, LOGO_HTML),
         '<div class="header-cta"><a class="btn btn-wa btn-sm" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
         '<a class="btn btn-call btn-sm hide-sm" href="tel:%s">Bel %s</a></div></div></header>' % (WA_DEFAULT, PHONE_TEL, PHONE_DISPLAY),
-        nav_html(path),
+        nav_html(path) + "</div>",
         '<main id="main">',
         page_body(page),
         "</main>",
@@ -464,10 +484,22 @@ def render(page):
         '<div class="bar" role="region" aria-label="Snel bestellen"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
         '<a class="btn btn-call" href="tel:%s">Bel nu</a></div>' % (WA_DEFAULT, PHONE_TEL),
         '<a class="fab" href="%s" target="_blank" rel="noopener" aria-label="Open WhatsApp">%s</a>' % (WA_DEFAULT, WA_SVG),
+        "<script>%s</script>" % JS,
         "</body>",
         "</html>",
     ]
     return "\n".join(head) + "\n"
+
+
+def h1_html(text):
+    """Kop met een rustiger tweede deel na de dubbele punt (alleen spans; de tekst blijft identiek)."""
+    t = esc(text)
+    if ": " in t:
+        a, b = t.split(": ", 1)
+        if len(a) >= 0.55 * len(b):  # alleen als het eerste deel de kop kan dragen
+            b = b.replace("24/7", '<span class="lit">24/7</span>', 1)
+            return '%s: <span class="h1b">%s</span>' % (a, b)
+    return t
 
 
 def doc_page(page, body_inner, meta=None):
@@ -495,6 +527,6 @@ def hero(page, eyebrow, points=None, cta=True):
                 '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
                 % (WA_ORDER, PHONE_TEL, PHONE_DISPLAY))
     return ('<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in">'
-            '<p class="eyebrow">%s</p><h1 id="h1">%s</h1><p class="lead">%s</p>%s%s</div></div></section>'
+            '<p class="eyebrow">%s</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p>%s%s</div></div></section>'
             % (crumbs_html(page["crumbs"]) if page.get("crumbs_in_hero", True) and page["path"] != "/" else "",
-               esc(eyebrow), esc(page["h1"]), page["lead"], pts, ctas))
+               esc(eyebrow), h1_html(page["h1"]), HORIZON, page["lead"], pts, ctas))

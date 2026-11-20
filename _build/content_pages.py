@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Overige pagina's: zakelijk, 24/7, over ons, contact, privacy, algemene voorwaarden, 404."""
-from common import (SITE, BUSINESS_ID, EMAIL, PHONE_DISPLAY, PHONE_TEL, WA_DEFAULT, WA_ORDER, esc, hero, checks, steps,
-                    facts, faq_html, cta_block, toc, phone_link, wa_link, wa, doc_page, crumbs_html)
+from common import (SITE, BUSINESS_ID, EMAIL, PHONE_DISPLAY, PHONE_NW, PHONE_TEL, WA_DEFAULT, WA_ORDER, esc, hero, checks, steps,
+                    facts, faq_html, cta_block, toc, phone_link, wa_link, wa, doc_page, crumbs_html, h1_html, HORIZON)
 
 
 def zakelijk_page():
@@ -194,7 +194,7 @@ def contact_page():
         page_type="ContactPage",
         faq=[
             ("Wat is het telefoonnummer van Lachgasamsterdam-247?",
-             "Je bereikt ons 24/7 op %s, via telefoon en WhatsApp." % PHONE_DISPLAY),
+             "Je bereikt ons 24/7 op %s, via telefoon en WhatsApp." % PHONE_NW),
             ("Wat moet ik in mijn WhatsApp-bericht zetten?",
              "Je volledige leveradres met postcode, huisnummer en eventueel verdieping en bel, het gewenste aantal en de maat, het moment waarop je wilt ontvangen en een nummer waarop je bereikbaar bent. Zakelijk geef je ook je bedrijfsnaam door."),
             ("Kan ik ook mailen?",
@@ -203,8 +203,8 @@ def contact_page():
         speakable=["#h1", ".lead"],
     )
     body = [
-        '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in"><p class="eyebrow">Contact · 24/7 bereikbaar</p><h1 id="h1">%s</h1><p class="lead">%s</p></div></div></section>'
-        % (crumbs_html(page["crumbs"]), esc(page["h1"]), page["lead"]),
+        '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in"><p class="eyebrow">Contact · 24/7 bereikbaar</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p></div></div></section>'
+        % (crumbs_html(page["crumbs"]), h1_html(page["h1"]), HORIZON, page["lead"]),
         '<section class="section" aria-labelledby="h-kanalen"><div class="wrap"><h2 id="h-kanalen">Zo bereik je ons</h2><div class="cards contact">'
         '<div class="card"><h3>WhatsApp</h3><p>Stuur je adres en het gewenste aantal. Wij bevestigen levermoment en prijs.</p><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">Open WhatsApp</a></div>'
         '<div class="card"><h3>Telefoon</h3><p>Liever praten over levering en details? Bel ons, ook &rsquo;s nachts.</p><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
@@ -247,7 +247,7 @@ def privacy_page():
         priority="0.3", changefreq="yearly", published="2026-09-20",
     )
     body = doc_page(page,
-        '<h2>Verwerkingsverantwoordelijke</h2><p>Lachgasamsterdam-247 (hierna: &ldquo;wij&rdquo;). Voor vragen over privacy kun je contact opnemen via WhatsApp of telefoon (%s) of via e-mail: <a href="mailto:%s">%s</a>.</p>' % (PHONE_DISPLAY, EMAIL, EMAIL) +
+        '<h2>Verwerkingsverantwoordelijke</h2><p>Lachgasamsterdam-247 (hierna: &ldquo;wij&rdquo;). Voor vragen over privacy kun je contact opnemen via WhatsApp of telefoon (%s) of via e-mail: <a href="mailto:%s">%s</a>.</p>' % (PHONE_NW, EMAIL, EMAIL) +
         '<h2>Welke gegevens verwerken wij?</h2><p>Afhankelijk van hoe je contact met ons opneemt of een bestelling plaatst, kan dat zijn:</p><ul><li>Naam en contactgegevens (telefoonnummer, WhatsApp-nummer, e-mailadres)</li><li>Adres- en levergegevens (bezorgadres in Amsterdam of omstreken)</li><li>Inhoud van berichten die je naar ons stuurt</li><li>Technische gegevens bij bezoek aan de website (zoals IP-adres en browsertype), voor zover standaard server- of hostinglogs dat met zich meebrengen</li></ul>'
         '<h2>Doeleinden</h2><ul><li>Het aannemen en uitvoeren van bestellingen en leveringen</li><li>Contact over je bestelling, planning en bevestiging</li><li>Beantwoorden van vragen en klantenservice</li><li>Handhaving van onze overeenkomst en wettelijke verplichtingen</li></ul>'
         '<h2>Grondslag</h2><p>Verwerking geschiedt op basis van uitvoering van een overeenkomst, gerechtvaardigd belang (bijvoorbeeld bereikbaarheid van de dienst) of, waar van toepassing, toestemming.</p>'
@@ -279,7 +279,7 @@ def voorwaarden_page():
         '<h2>5. Prijzen en betaling</h2><p>Wij hanteren de prijs zoals bij de bestelling bevestigd. Eventuele kosten worden vooraf duidelijk gecommuniceerd. Betalingsafspraken (moment en wijze) volgen uit de bevestiging, tenzij anders overeengekomen.</p>'
         '<h2>6. Levering en veiligheid</h2><p>Levering geschiedt volgens de gemaakte afspraken. Jij zorgt voor een bereikbaar leveradres en medewerking voor een veilige overdracht. Wij verwachten dat je producten verantwoordelijk gebruikt en de geldende wet- en regelgeving respecteert.</p>'
         '<h2>7. Annulering en wijziging</h2><p>Annulering of wijziging van een bestelling is mogelijk volgens de afspraken in de bevestiging. Redelijke kosten kunnen in rekening worden gebracht als de levering al is voorbereid of onderweg is.</p>'
-        '<h2>8. Klachten</h2><p>Klachten kun je melden via <a href="mailto:%s">%s</a> of telefonisch en via WhatsApp op %s. Wij streven naar een snelle en nette oplossing.</p>' % (EMAIL, EMAIL, PHONE_DISPLAY) +
+        '<h2>8. Klachten</h2><p>Klachten kun je melden via <a href="mailto:%s">%s</a> of telefonisch en via WhatsApp op %s. Wij streven naar een snelle en nette oplossing.</p>' % (EMAIL, EMAIL, PHONE_NW) +
         '<h2>9. Aansprakelijkheid</h2><p>Onze aansprakelijkheid is beperkt tot hetgeen wettelijk verplicht is en tot directe schade, met uitzondering van opzet of grove schuld. Wij zijn niet aansprakelijk voor gevolgschade, tenzij dwingend recht anders bepaalt.</p>'
         '<h2>10. Toepasselijk recht</h2><p>Op deze voorwaarden is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Nederland.</p><p style="margin-top:2rem"><a href="/">&larr; Terug naar de homepage</a></p>')
     page["body"] = body

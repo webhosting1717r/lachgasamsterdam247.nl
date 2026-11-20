@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Informatiepagina's (artikelen) over lachgas."""
 from common import (SITE, BUSINESS_ID, OG_IMAGE, TODAY, PHONE_DISPLAY, esc, doc_page, checks, steps, faq_html,
-                    cta_block, toc, crumbs_html)
+                    cta_block, toc, crumbs_html, h1_html, HORIZON)
 
 ARTICLES = {}
 
@@ -308,8 +308,8 @@ def hub_page():
         '<div class="card"><h3><a href="/lachgas-informatie/%s/">%s</a></h3><p>%s</p><p class="more"><a href="/lachgas-informatie/%s/">Lees verder &rarr;</a></p></div>'
         % (s, esc(ARTICLES[s]["h1"]), ARTICLES[s]["description"].split(". ")[0].rstrip("?") + ".", s) for s in ORDER) + "</div>")
     body = [
-        '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in"><p class="eyebrow">Informatie · 18+</p><h1 id="h1">%s</h1><p class="lead">%s</p></div></div></section>'
-        % (crumbs_html(page["crumbs"]), esc(page["h1"]), page["lead"]),
+        '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in"><p class="eyebrow">Informatie · 18+</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p></div></div></section>'
+        % (crumbs_html(page["crumbs"]), h1_html(page["h1"]), HORIZON, page["lead"]),
         '<section class="section" aria-labelledby="h-art"><div class="wrap"><h2 id="h-art">Artikelen</h2>%s</div></section>' % cards,
         '<section class="section alt" aria-labelledby="h-nood"><div class="wrap prose"><h2 id="h-nood">Hulp en betrouwbare bronnen</h2>'
         '<p>Bij acute klachten of een noodgeval bel je direct 112. Bij tintelingen, gevoelloosheid of andere klachten na lachgasgebruik ga je naar je huisarts. Onafhankelijke informatie vind je bij <a href="https://www.drugsinfo.nl" target="_blank" rel="noopener nofollow">Drugsinfo van het Trimbos-instituut</a>; de actuele regels vind je op <a href="https://www.rijksoverheid.nl" target="_blank" rel="noopener nofollow">rijksoverheid.nl</a>.</p></div></section>',

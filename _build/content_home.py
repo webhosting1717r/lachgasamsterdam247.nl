@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Homepage."""
-from common import (SITE, BUSINESS_ID, EMAIL, PHONE_DISPLAY, PHONE_TEL, WA_DEFAULT, WA_ORDER, STADSDELEN, REGIO, TANKS,
-                    esc, checks, steps, facts, faq_html, cta_block, toc, phone_link, wa_link, wa, chips, icon_cards, ICONS)
+from common import (SITE, BUSINESS_ID, EMAIL, PHONE_DISPLAY, PHONE_NW, PHONE_TEL, WA_DEFAULT, WA_ORDER, STADSDELEN, REGIO, TANKS,
+                    esc, checks, steps, facts, faq_html, cta_block, toc, phone_link, wa_link, wa, chips, icon_cards, ICONS,
+                    h1_html, HORIZON)
 from content_areas import AREAS
 
 FAQ = [
@@ -46,7 +47,7 @@ FAQ = [
     ("Waarom bestel ik via WhatsApp of telefoon en niet via een webshop?",
      "Omdat het sneller en persoonlijker is. Je spreekt direct met ons, krijgt een duidelijke bevestiging met levermoment en prijs en hoeft geen account of formulier in te vullen. Zo blijft de lijn tussen jouw bericht en de levering zo kort mogelijk."),
     ("Hoe neem ik contact op met Lachgasamsterdam-247?",
-     "Stuur een WhatsApp-bericht of bel %s. Je kunt ons ook mailen op %s. De snelste manier is WhatsApp of telefoon; wij zijn 24/7 bereikbaar." % (PHONE_DISPLAY, EMAIL)),
+     "Stuur een WhatsApp-bericht of bel %s. Je kunt ons ook mailen op %s. De snelste manier is WhatsApp of telefoon; wij zijn 24/7 bereikbaar." % (PHONE_NW, EMAIL)),
 ]
 
 
@@ -115,7 +116,7 @@ def home_page():
     body = [
         # Hero
         '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap"><div class="hero-in">'
-        '<p class="eyebrow">Lachgas Amsterdam &middot; 24/7 bereikbaar</p><h1 id="h1">%s</h1><p class="lead">%s</p>'
+        '<p class="eyebrow">Lachgas Amsterdam &middot; 24/7 bereikbaar</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p>'
         '<ul class="points"><li>24/7 beschikbaar, ook &rsquo;s nachts en in het weekend</li><li>Doorgaans bezorgd binnen 20 tot 30 minuten</li><li>Duidelijke prijs en levermoment vooraf</li><li>Alle stadsdelen van Amsterdam en de regio</li></ul>'
         '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
         '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
@@ -124,7 +125,7 @@ def home_page():
         '<div>%s<div><strong>1. Stuur je adres</strong><p>Via WhatsApp of telefoon, met het gewenste aantal.</p></div></div>'
         '<div>%s<div><strong>2. Bevestiging</strong><p>Je hoort direct het levermoment en de prijs.</p></div></div>'
         '<div>%s<div><strong>3. Bezorgd</strong><p>Doorgaans binnen 20 tot 30 minuten aan je deur.</p></div></div>'
-        '</div></div></section>' % (esc(page["h1"]), page["lead"], WA_ORDER, PHONE_TEL, PHONE_DISPLAY,
+        '</div></div></section>' % (h1_html(page["h1"]), HORIZON, page["lead"], WA_ORDER, PHONE_TEL, PHONE_DISPLAY,
                                     chips([("/bezorggebied/%s/" % s, n) for s, n in STADSDELEN] + [("/bezorggebied/", "Regio en meer")], "Direct naar jouw stadsdeel"),
                                     ICONS["chat"], ICONS["check"], ICONS["home"]),
 
