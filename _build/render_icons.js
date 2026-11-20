@@ -50,7 +50,14 @@ h1 span{display:block;color:#a1a1a6}
 <div class="row"><span class="pill"><i></i>24/7 bezorgd</span>Alle stadsdelen · via WhatsApp</div></div>
 <div class="url">lachgasamsterdam<b>-247.nl</b></div>`);
   await p.waitForTimeout(300);
-  await p.screenshot({ path: path.join(IMG, 'opengraph-image.png') });
+  const og = path.join(IMG, 'opengraph-image.png');
+  await p.screenshot({ path: og });
   await b.close();
+  // Social-afbeelding compact maken (ca. 120 kB i.p.v. 300 kB; WhatsApp-previews willen een klein bestand).
+  // Vereist het npm-pakket "sharp" (libimagequant); zonder dat pakket blijft het bestand ongecomprimeerd.
+  try {
+    const sharp = require('sharp');
+    fs.writeFileSync(og, await sharp(og).png({ palette: true, quality: 100, colours: 256, dither: 1, effort: 10 }).toBuffer());
+  } catch (e) { console.log('sharp niet gevonden: social-afbeelding is niet verkleind'); }
   console.log('iconen en social-afbeelding gerenderd');
 })();

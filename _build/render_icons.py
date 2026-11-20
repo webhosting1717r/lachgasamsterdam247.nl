@@ -9,9 +9,11 @@ ims = [Image.open(p).convert("RGBA") for p in srcs]
 ims[0].save(os.path.join(ROOT, "favicon.ico"), format="ICO", sizes=[(48, 48), (32, 32), (16, 16)], append_images=ims[1:])
 for p in srcs:
     os.remove(p)
-# social-afbeelding compact opslaan
+# social-afbeelding compact opslaan (een al door render_icons.js verkleind paletbestand blijft zoals het is)
 og = os.path.join(ROOT, "images", "opengraph-image.png")
-Image.open(og).convert("RGB").save(og, optimize=True)
+_im = Image.open(og)
+if _im.mode != "P":
+    _im.convert("RGB").save(og, optimize=True)
 for n in ("icon-512.png", "icon-192.png", "apple-touch-icon.png"):
     p = os.path.join(ROOT, "images", n)
     Image.open(p).save(p, optimize=True)
