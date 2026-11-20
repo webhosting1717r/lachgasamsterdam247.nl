@@ -413,6 +413,7 @@ def page_body(page):
 # Typografische afwerking: voegt uitsluitend <span>-omhulsels toe, nooit tekst.
 # ---------------------------------------------------------------------------
 _UNIT = re.compile(r"(\d+ (?:kg|minuten|uur)\b)")
+_RANGE = re.compile(r"((?:\d+ tot )?\d+ (?:kg|minuten|uur)\b)")  # in lopende tekst blijft ook "20 tot 30 minuten" heel
 
 
 def _h2_spans(m):
@@ -436,7 +437,8 @@ def polish(main):
         if not tok.startswith("<"):
             ok = (bool(stack) and not any(n in _NW_BLOCK or (c & _NW_BLOCK_CLASSES) for n, c in stack)
                   and (stack[-1][0] in _NW_PARENTS or (stack[-1][0] == "span" and stack[-1][1] & _NW_SPANS)))
-            out.append(_UNIT.sub(r'<span class="nw">\1</span>', tok) if ok else tok)
+            pat = _RANGE if ok and stack[-1][0] in _NW_RANGE_PARENTS else _UNIT  # smalle cellen en koppen: kort
+            out.append(pat.sub(r'<span class="nw">\1</span>', tok) if ok else tok)
             continue
         out.append(tok)
         m = re.match(r"<(/?)([a-zA-Z][\w-]*)", tok)
@@ -457,6 +459,7 @@ _NW_BLOCK = {"a", "button", "nav", "svg", "h3", "script", "style"}
 _NW_BLOCK_CLASSES = {"eyebrow", "crumbs", "chips", "toc", "strip"}
 _NW_PARENTS = {"p", "li", "dd", "td", "strong", "em", "b", "h1"}
 _NW_SPANS = {"h1b", "h2s", "h2b"}
+_NW_RANGE_PARENTS = {"p", "li", "dd", "strong", "em", "b"}
 
 
 # ---------------------------------------------------------------------------

@@ -98,8 +98,6 @@ sub{font-size:.75em;line-height:0}
 .btn:active{transform:scale(.97)}
 .btn-sm{min-height:44px;padding:0 min(1.05rem,4.7vw);font-size:min(.9375rem,4.17vw)}
 .btn-sm::before{display:none}
-.jump a:active::before{background-color:rgba(255,255,255,.12)}
-.doc-toc a:active,#inhoud .toc a:active,.site-footer li a:active{color:var(--blue)}
 .hero :where(.crumbs,h1,.lead,.points,.cta-row,.fine,.strip){width:calc(100% - 2*var(--gut));max-width:75rem;margin-inline:auto}
 .hero :where(.lead,.points,.cta-row,.fine,.chips,.strip){order:2}
 .lead{margin-top:1.25rem;color:var(--ink2);font-size:1.125rem;line-height:1.52;letter-spacing:-.016em}
@@ -113,6 +111,7 @@ sub{font-size:.75em;line-height:0}
 .prose>ul,.prose>ol,.prose>dl{margin-top:1.5rem}
 .prose h3+ul,.prose h3+ol{margin-top:1rem}
 .prose h3+dl,.prose h3+.tbl-wrap{margin-top:1rem}
+.facts dd>a:only-child,.site-footer a,.doc-toc a,.toc a{overflow-wrap:anywhere;max-width:100%}
 @media(max-width:43.99rem){:root{--hz:96px}
 .tbl:has(th:nth-child(3)) :is(th,td):last-child{padding-right:3rem}}
 .crumbs{color:var(--ink3);font-size:.8125rem;letter-spacing:0}
@@ -157,6 +156,7 @@ sub{font-size:.75em;line-height:0}
 .bar{position:fixed;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:60;isolation:isolate;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px;border-radius:999px}
 .bar .btn{min-height:3rem;padding-inline:min(.75rem,3.1vw);font-size:min(1.0625rem,4.72vw)}
 .bar .btn-call{background-color:rgba(255,255,255,.14)}
+.bar::after{content:"";position:absolute;z-index:-2;left:calc(-1*max(8px,env(safe-area-inset-left,0px)));right:calc(-1*max(8px,env(safe-area-inset-right,0px)));top:-1.5rem;bottom:calc(-8px - env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.62) 40%,rgba(0,0,0,.94));pointer-events:none}
 .fab{display:none}
 @media(max-width:56.24rem){.header-cta .btn-wa{background-color:rgba(255,255,255,.1);color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px rgba(255,255,255,.1)}}
 @media(min-width:44rem) and (max-height:31.25rem){.bar{display:none}
@@ -184,12 +184,13 @@ h2{font-size:2.5rem}
 .foot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .foot-grid>div:last-child{grid-column:auto}
 .foot-grid>div:last-child ul{display:block}}
+@media(min-width:44rem) and (max-width:47.99rem){.jump:not(.pagetoc) a{padding-inline:.5rem}
+.jump:not(.pagetoc) li:last-child{padding-right:0}}
 @media(min-width:56.25rem){:root{--hz:clamp(150px,13vw,220px);--fz:150px}
 body{padding-bottom:0}
 .bar{display:none}
 .fab{position:fixed;right:1.5rem;bottom:1.5rem;z-index:60;display:flex;align-items:center;justify-content:center;width:3.5rem;height:3.5rem;border-radius:50%;background:radial-gradient(120% 120% at 30% 15%,#3d9dff,var(--blue-fill) 52%,#0058b9);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 0 0 1px rgba(255,255,255,.12),0 14px 34px -10px rgba(0,113,227,.8),0 4px 12px rgba(0,0,0,.5);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
 .fab svg{width:1.7rem;height:1.7rem}
-.fab:active{transform:scale(.94)}
 .jump:not(.pagetoc) ul{width:fit-content;max-width:100%;margin-inline:auto}
 .foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2.5rem}
 .foot-brand{grid-column:auto}
@@ -223,6 +224,9 @@ body{font-size:1.125rem}
 .btn:hover::after{translate:110% 0}
 .btn-wa:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.25),0 14px 34px -10px rgba(0,113,227,.95)}
 .btn-call:hover{background-color:rgba(255,255,255,.16)}}
+.jump a:active::before{background-color:rgba(255,255,255,.12)}
+.doc-toc a:active,#inhoud .toc a:active,.site-footer li a:active{color:var(--blue)}
+.fab:active{transform:scale(.94)}
 @media(prefers-reduced-motion:no-preference){@supports (animation-timeline:scroll()){.header-in::before,.site-header::before,.top::before,.top::after{animation:fade-in linear both;animation-timeline:scroll(root);animation-range:0px 72px}
 .header-in::before,.site-header::before{animation-range:0px 20px}
 body::before{animation:sky linear both;animation-timeline:scroll(root)}
