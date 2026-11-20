@@ -30,8 +30,11 @@ if(s){s._a=a;io.observe(s);}
 });
 }
 // 3. Hoofdmenu op de telefoon: schuif de rij naar de huidige pagina, zonder de pagina zelf te verplaatsen.
+// (In een animatieframe, vlak voor het eerste beeld: zo is er geen extra opmaakberekening nodig.)
 var k=d.querySelector(".jump:not(.pagetoc) [aria-current],.jump:not(.pagetoc) .on"),u=k&&k.closest("ul");
-if(u&&u.scrollWidth>u.clientWidth)u.scrollLeft+=k.getBoundingClientRect().left-u.getBoundingClientRect().left-(u.clientWidth-k.offsetWidth)/2;
+if(u&&w.requestAnimationFrame)requestAnimationFrame(function(){
+if(u.scrollWidth>u.clientWidth)u.scrollLeft+=k.getBoundingClientRect().left-u.getBoundingClientRect().left-(u.clientWidth-k.offsetWidth)/2;
+});
 // 4. iOS Safari toont :active pas als er een touchstart-luisteraar bestaat.
 d.addEventListener("touchstart",function(){},{passive:true});
 })();
