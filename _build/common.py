@@ -11,8 +11,8 @@ import re
 SITE = "https://lachgasamsterdam-247.nl"
 BRAND = "Lachgasamsterdam-247"
 EMAIL = "info@lachgasamsterdam-247.nl"
-PHONE_DISPLAY = "+31 6 84 69 51 84"
-PHONE_TEL = "+31684695184"
+PHONE_DISPLAY = "+31 6 85 43 60 44"
+PHONE_TEL = "+31685436044"
 PHONE_NW = '<span class="nw">%s</span>' % PHONE_DISPLAY  # in lopende tekst: nummer breekt niet af (alleen een span)
 WA_NUMBER = "447441484283"
 TODAY = "2026-09-29"
@@ -270,10 +270,9 @@ def cta_block(title="Nu lachgas bestellen in Amsterdam", text=None, wa_text=None
     link = wa(wa_text) if wa_text else WA_ORDER
     return ('<section class="section cta-section" aria-labelledby="h-cta"><div class="wrap"><div class="cta-box">'
             '<h2 id="h-cta">%s</h2><p>%s</p>'
-            '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a>'
-            '<a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
+            '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a></div>'
             '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
-            '</div></div></section>' % (esc(title), text, link, PHONE_TEL, PHONE_DISPLAY))
+            '</div></div></section>' % (esc(title), text, link))
 
 
 def checks(items):
@@ -629,14 +628,14 @@ def render(page):
         '<div class="top"><header class="site-header"><div class="wrap header-in">'
         '<a class="logo" href="/" aria-label="%s, naar de homepage">%s</a>' % (BRAND, LOGO_HTML),
         '<div class="header-cta"><a class="btn btn-wa btn-sm" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
-        '<a class="btn btn-call btn-sm hide-sm" href="tel:%s">Bel %s</a></div></div></header>' % (WA_DEFAULT, PHONE_TEL, PHONE_DISPLAY),
+        '</div></div></header>' % WA_DEFAULT,
         nav_html(path) + "</div>",
         '<main id="main">',
         polish(page_body(page)),
         "</main>",
         footer_html(),
         '<div class="bar" role="region" aria-label="Snel bestellen"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
-        '<a class="btn btn-call" href="tel:%s">Bel nu</a></div>' % (WA_DEFAULT, PHONE_TEL),
+        '</div>' % WA_DEFAULT,
         '<a class="fab" href="%s" target="_blank" rel="noopener" aria-label="Open WhatsApp">%s</a>' % (WA_DEFAULT, WA_SVG),
         "<script>%s</script>" % JS,
         "</body>",
@@ -682,10 +681,9 @@ def hero(page, eyebrow, points=None, cta=True):
         pts = '<ul class="points">' + "".join("<li>%s</li>" % p for p in points) + "</ul>"
     ctas = ""
     if cta:
-        ctas = ('<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a>'
-                '<a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
+        ctas = ('<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a></div>'
                 '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
-                % (WA_ORDER, PHONE_TEL, PHONE_DISPLAY))
+                % WA_ORDER)
     return ('<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in">'
             '<p class="eyebrow">%s</p><h1 id="h1">%s</h1><p class="lead">%s</p>%s%s%s</div></div></section>'
             % (crumbs_html(page["crumbs"]) if page.get("crumbs_in_hero", True) and page["path"] != "/" else "",

@@ -207,7 +207,7 @@ def contact_page():
         % (crumbs_html(page["crumbs"]), h1_html(page["h1"]), HORIZON, page["lead"]),
         '<section class="section" aria-labelledby="h-kanalen"><div class="wrap"><h2 id="h-kanalen">Zo bereik je ons</h2><div class="cards contact">'
         '<div class="card"><h3>WhatsApp</h3><p>Stuur je adres en het gewenste aantal. Wij bevestigen levermoment en prijs.</p><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">Open WhatsApp</a></div>'
-        '<div class="card"><h3>Telefoon</h3><p>Liever praten over levering en details? Bel ons, ook &rsquo;s nachts.</p><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
+        '<div class="card"><h3>Telefoon</h3><p>Liever praten over levering en details? Bel ons, ook &rsquo;s nachts.</p><p class="tel"><a href="tel:%s">%s</a></p></div>'
         '<div class="card"><h3>E-mail</h3><p>Voor vragen die geen haast hebben.</p><a class="btn btn-call" href="mailto:%s">%s</a></div>'
         '</div></div></section>' % (WA_ORDER, PHONE_TEL, PHONE_DISPLAY, EMAIL, EMAIL),
         '<section class="section alt" aria-labelledby="h-geg"><div class="wrap prose"><h2 id="h-geg">Gegevens</h2>%s'

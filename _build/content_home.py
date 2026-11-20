@@ -118,14 +118,14 @@ def home_page():
         '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap"><div class="hero-in">'
         '<p class="eyebrow">Lachgas Amsterdam &middot; 24/7 bereikbaar</p><h1 id="h1">%s</h1><p class="lead">%s</p>'
         '<ul class="points"><li>24/7 beschikbaar, ook &rsquo;s nachts en in het weekend</li><li>Doorgaans bezorgd binnen 20 tot 30 minuten</li><li>Duidelijke prijs en levermoment vooraf</li><li>Alle stadsdelen van Amsterdam en de regio</li></ul>'
-        '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
+        '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a></div>'
         '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
         '%s%s</div>'
         '<div class="strip">'
         '<div>%s<div><strong>1. Stuur je adres</strong><p>Via WhatsApp of telefoon, met het gewenste aantal.</p></div></div>'
         '<div>%s<div><strong>2. Bevestiging</strong><p>Je hoort direct het levermoment en de prijs.</p></div></div>'
         '<div>%s<div><strong>3. Bezorgd</strong><p>Doorgaans binnen 20 tot 30 minuten aan je deur.</p></div></div>'
-        '</div></div></section>' % (h1_html(page["h1"]), page["lead"], WA_ORDER, PHONE_TEL, PHONE_DISPLAY,
+        '</div></div></section>' % (h1_html(page["h1"]), page["lead"], WA_ORDER,
                                     chips([("/bezorggebied/%s/" % s, n) for s, n in STADSDELEN] + [("/bezorggebied/", "Regio en meer")], "Direct naar jouw stadsdeel"),
                                     HORIZON,  # in de broncode na de tekst; CSS (order) zet hem onder de kop
                                     ICONS["chat"], ICONS["check"], ICONS["home"]),
@@ -272,7 +272,7 @@ def home_page():
         '<section class="section" id="contact" aria-labelledby="h-contact"><div class="wrap"><h2 id="h-contact">Contact: lachgas bestellen in Amsterdam</h2>'
         '<p class="intro">Wij zijn 24 uur per dag, 7 dagen per week bereikbaar. De snelste manier om lachgas te bestellen is via WhatsApp of telefoon.</p><div class="cards contact">'
         '<div class="card"><h3>WhatsApp</h3><p>Stuur je adres en het gewenste aantal. Wij bevestigen levermoment en prijs.</p><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">Open WhatsApp</a></div>'
-        '<div class="card"><h3>Telefoon</h3><p>Liever praten over levering en details? Bel ons, ook &rsquo;s nachts.</p><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
+        '<div class="card"><h3>Telefoon</h3><p>Liever praten over levering en details? Bel ons, ook &rsquo;s nachts.</p><p class="tel"><a href="tel:%s">%s</a></p></div>'
         '<div class="card"><h3>E-mail</h3><p>Voor vragen die geen haast hebben.</p><a class="btn btn-call" href="mailto:%s">%s</a></div>'
         '</div></div></section>' % (WA_ORDER, PHONE_TEL, PHONE_DISPLAY, EMAIL, EMAIL),
     ]
