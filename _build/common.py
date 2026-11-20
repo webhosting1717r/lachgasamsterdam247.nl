@@ -14,7 +14,7 @@ EMAIL = "info@lachgasamsterdam-247.nl"
 PHONE_DISPLAY = "+31 6 85 43 60 44"
 PHONE_TEL = "+31685436044"
 PHONE_NW = '<span class="nw">%s</span>' % PHONE_DISPLAY  # in lopende tekst: nummer breekt niet af (alleen een span)
-WA_NUMBER = "447441484283"
+WA_NUMBER = "31685436044"  # zelfde nummer als de telefoon (PHONE_TEL zonder plus)
 TODAY = "2026-09-29"
 CSS_VERSION = "20260929"
 OG_IMAGE = SITE + "/images/opengraph-image.png"
