@@ -116,17 +116,18 @@ def home_page():
     body = [
         # Hero
         '<section class="hero" id="top" aria-labelledby="h1"><div class="wrap"><div class="hero-in">'
-        '<p class="eyebrow">Lachgas Amsterdam &middot; 24/7 bereikbaar</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p>'
+        '<p class="eyebrow">Lachgas Amsterdam &middot; 24/7 bereikbaar</p><h1 id="h1">%s</h1><p class="lead">%s</p>'
         '<ul class="points"><li>24/7 beschikbaar, ook &rsquo;s nachts en in het weekend</li><li>Doorgaans bezorgd binnen 20 tot 30 minuten</li><li>Duidelijke prijs en levermoment vooraf</li><li>Alle stadsdelen van Amsterdam en de regio</li></ul>'
         '<div class="cta-row"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp: lachgas bestellen</a><a class="btn btn-call" href="tel:%s">Bel %s</a></div>'
         '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
-        '%s</div>'
+        '%s%s</div>'
         '<div class="strip">'
         '<div>%s<div><strong>1. Stuur je adres</strong><p>Via WhatsApp of telefoon, met het gewenste aantal.</p></div></div>'
         '<div>%s<div><strong>2. Bevestiging</strong><p>Je hoort direct het levermoment en de prijs.</p></div></div>'
         '<div>%s<div><strong>3. Bezorgd</strong><p>Doorgaans binnen 20 tot 30 minuten aan je deur.</p></div></div>'
-        '</div></div></section>' % (h1_html(page["h1"]), HORIZON, page["lead"], WA_ORDER, PHONE_TEL, PHONE_DISPLAY,
+        '</div></div></section>' % (h1_html(page["h1"]), page["lead"], WA_ORDER, PHONE_TEL, PHONE_DISPLAY,
                                     chips([("/bezorggebied/%s/" % s, n) for s, n in STADSDELEN] + [("/bezorggebied/", "Regio en meer")], "Direct naar jouw stadsdeel"),
+                                    HORIZON,  # in de broncode na de tekst; CSS (order) zet hem onder de kop
                                     ICONS["chat"], ICONS["check"], ICONS["home"]),
 
         # Inhoud

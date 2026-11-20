@@ -12,7 +12,7 @@ De PNG-iconen, favicon.ico en de social-afbeelding worden van deze SVG's gerende
 De skyline bestaat in twee vormen die uit dezelfde tekening komen:
   * horizon_html()   inline SVG-lagen voor de hero (huizen + drie groepen verlichte ramen +
                      spiegeling); de ramen gaan per groep aan via scroll-gestuurde animatie.
-  * grachtenpanden.svg  statisch bestand (alle ramen aan) voor de horizon boven de footer.
+  * grachtenpanden.svg  statisch bestand (twee van de drie lichtgroepen, warm) voor de horizon boven de footer.
 """
 import os
 import random
@@ -236,7 +236,8 @@ def horizon_html():
 
 
 def skyline_svg():
-    """Statisch bestand voor de footer-horizon: zelfde tekening, alle ramen aan, met zachte gloed."""
+    """Statisch bestand voor de footer-horizon: zelfde tekening met zachte gloed. Alleen lichtgroep 1 en 2
+    branden en alles is warm van toon: even ingetogen als de hero in rust, geen lichtslinger."""
     houses, w = skyline_data()
     tones, panes, lights = _layers(houses)
     body = "".join('<path d="%s" fill="%s"/>' % (d, HOUSE_TONES[i]) for i, d in enumerate(tones))
@@ -246,9 +247,9 @@ def skyline_svg():
     body += '<path d="%s" fill="#1d1d22"/>' % _lamp_posts(xs)
     lit = '<path d="%s" fill="%s"/>' % (_lamp_heads(xs), LIGHTS["a"])
     for c in "abc":
-        rs = [r for (g, cc), v in lights.items() if cc == c for r in v]
+        rs = [r for (g, cc), v in lights.items() if cc == c and g != 3 for r in v]
         if rs:
-            lit += '<path d="%s" fill="%s"/>' % (_rects(rs), LIGHTS[c])
+            lit += '<path d="%s" fill="%s"/>' % (_rects(rs), LIGHTS["a" if c == "c" else c])
     body += '<g filter="url(#f)" opacity=".9">%s</g>%s' % (lit, lit)
     return ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">'
             '<defs><filter id="f" x="-5%%" y="-20%%" width="110%%" height="140%%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>'

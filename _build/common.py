@@ -330,6 +330,9 @@ def nav_html(current):
     for href, label in NAV:
         base = href.split("#")[0]
         attrs = ' aria-current="page"' if (base == current and "#" not in href) else ""
+        # onderliggende pagina: het menu-onderdeel van de sectie licht op (alleen een klasse, geen aria)
+        if not attrs and "#" not in href and base != "/" and current.startswith(base):
+            attrs = ' class="on"'
         out.append('<li><a href="%s"%s>%s</a></li>' % (href, attrs, esc(label)))
     out.append("</ul></div></nav>")
     return "".join(out)
@@ -339,8 +342,11 @@ import brand  # noqa: E402
 
 HORIZON = brand.horizon_html()
 
-SPECULATION = ('<script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},'
-               '{"not":{"selector_matches":"[target=_blank]"}}]},"eagerness":"moderate"}]}</script>')
+def speculation(path):
+    """Prerender-regel voor interne links; de pagina zelf telt niet mee (anders kost de logo-link een plek)."""
+    return ('<script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},'
+            '{"not":{"href_matches":%s}},{"not":{"selector_matches":"[target=_blank]"}}]},"eagerness":"moderate"}]}</script>'
+            % json.dumps(path))
 
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.js"), encoding="utf-8") as _f:
     JS = "".join(line.strip() for line in _f if line.strip() and not line.strip().startswith("//"))
@@ -401,6 +407,153 @@ def page_body(page):
             cut += len("</section>")
             body = body[:cut] + auto_toc(body) + body[cut:]
     return body
+
+
+# ---------------------------------------------------------------------------
+# Typografische afwerking: voegt uitsluitend <span>-omhulsels toe, nooit tekst.
+# ---------------------------------------------------------------------------
+_UNIT = re.compile(r"(\d+ (?:kg|minuten|uur)\b)")
+
+
+def _h2_spans(m):
+    open_tag, inner = m.group(1), m.group(2)
+    if ": " in inner and "<" not in inner:
+        a, b = inner.split(": ", 1)
+        inner = '%s: <span class="h2b">%s</span>' % (a, b)  # rustiger tweede deel, zoals in de h1
+    return '%s<span class="h2s">%s</span></h2>' % (open_tag, inner)
+
+
+def polish(main):
+    """Sectiekoppen krijgen een binnenblok (.h2s: dat blijft op desktop hangen, terwijl de h2 zelf het
+    ankerdoel bovenaan de sectie blijft) en een getal blijft bij zijn eenheid (.nw)."""
+    parts = re.split(r"(<article\b.*?</article>)", main, flags=re.S)
+    for i in range(0, len(parts), 2):  # artikelen (doorlopende tekst) slaan we over
+        parts[i] = re.sub(r"(<h2\b[^>]*>)(.*?)</h2>", _h2_spans, parts[i], flags=re.S)
+    # Getal + eenheid: alleen in gewone lopende tekst. Niet in links, knoppen, navigatie of andere
+    # flex-elementen: daar zou een extra span een eigen flex-item worden (met tussenruimte).
+    out, stack = [], []
+    for tok in re.split(r"(<[^>]+>)", "".join(parts)):
+        if not tok.startswith("<"):
+            ok = (bool(stack) and not any(n in _NW_BLOCK or (c & _NW_BLOCK_CLASSES) for n, c in stack)
+                  and (stack[-1][0] in _NW_PARENTS or (stack[-1][0] == "span" and stack[-1][1] & _NW_SPANS)))
+            out.append(_UNIT.sub(r'<span class="nw">\1</span>', tok) if ok else tok)
+            continue
+        out.append(tok)
+        m = re.match(r"<(/?)([a-zA-Z][\w-]*)", tok)
+        if not m:
+            continue
+        name = m.group(2).lower()
+        if m.group(1):
+            while stack and stack.pop()[0] != name:
+                pass
+        elif not tok.endswith("/>") and name not in _VOID:
+            cls = re.search(r'\bclass="([^"]*)"', tok)
+            stack.append((name, set(cls.group(1).split()) if cls else set()))
+    return "".join(out)
+
+
+_VOID = {"br", "img", "hr", "wbr", "input", "meta", "link", "source", "col"}
+_NW_BLOCK = {"a", "button", "nav", "svg", "h3", "script", "style"}
+_NW_BLOCK_CLASSES = {"eyebrow", "crumbs", "chips", "toc", "strip"}
+_NW_PARENTS = {"p", "li", "dd", "td", "strong", "em", "b", "h1"}
+_NW_SPANS = {"h1b", "h2s", "h2b"}
+
+
+# ---------------------------------------------------------------------------
+# CSS per pagina snoeien: regels die op deze pagina nooit kunnen passen gaan eruit.
+# ---------------------------------------------------------------------------
+JS_CLASSES = {"on"}  # klassen die site.js toevoegt en dus niet in de HTML staan
+
+
+def _split_top(s, sep=","):
+    out, depth, cur = [], 0, ""
+    for ch in s:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == sep and depth == 0:
+            out.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    out.append(cur)
+    return out
+
+
+def _strip_not(sel):
+    """Haal :not(...) weg: wat daarin staat is geen vereiste."""
+    while True:
+        i = sel.find(":not(")
+        if i < 0:
+            return sel
+        depth = 0
+        for j in range(i + 4, len(sel)):
+            if sel[j] == "(":
+                depth += 1
+            elif sel[j] == ")":
+                depth -= 1
+                if depth == 0:
+                    sel = sel[:i] + sel[j + 1:]
+                    break
+        else:
+            return sel
+
+
+def _can_match(sel, classes, ids):
+    s = _strip_not(sel)
+    if re.search(r":(?:where|is|has)\([^)]*,", s):  # keuzelijst (a of b): altijd behouden
+        return True
+    s = re.sub(r"\[[^\]]*\]", "", s)  # attribuutselectors bevatten geen vereiste klassen
+    return (all(c in classes for c in re.findall(r"\.(-?[A-Za-z_][\w-]*)", s))
+            and all(i in ids for i in re.findall(r"#(-?[A-Za-z_][\w-]*)", s)))
+
+
+def _css_blocks(css):
+    i, n = 0, len(css)
+    while i < n:
+        j = css.find("{", i)
+        if j < 0:
+            break
+        depth, k = 1, j + 1
+        while depth and k < n:
+            if css[k] == "{":
+                depth += 1
+            elif css[k] == "}":
+                depth -= 1
+            k += 1
+        yield css[i:j].strip(), css[j + 1:k - 1]
+        i = k
+
+
+def _prune(css, classes, ids):
+    out = []
+    for pre, body in _css_blocks(css):
+        if pre.startswith("@"):
+            if re.match(r"@(media|supports)", pre):
+                inner = _prune(body, classes, ids)
+                if inner:
+                    out.append(pre + "{" + inner + "}")
+            else:
+                out.append(pre + "{" + body + "}")
+        elif any(_can_match(s, classes, ids) for s in _split_top(pre)):
+            out.append(pre + "{" + body + "}")
+    return "\n".join(out)
+
+
+def prune_css(css, body_html):
+    """Laat stijlregels weg waarvan geen enkele selector kan passen, omdat een vereiste klasse of id niet
+    in de pagina voorkomt. At-regels, element- en attribuutselectors blijven altijd staan."""
+    if os.environ.get("NOPRUNE"):
+        return css
+    classes = {c for v in re.findall(r'class="([^"]*)"', body_html) for c in v.split()} | JS_CLASSES
+    ids = set(re.findall(r'\bid="([^"]*)"', body_html))
+    out = _prune(css, classes, ids)
+    rest = re.sub(r"@keyframes [^{]+\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}", "", out)
+    for name in re.findall(r"@keyframes ([\w-]+)", out):  # sleutelbeelden zonder gebruiker
+        if not re.search(r"animation:[^;}]*\b%s\b" % re.escape(name), rest):
+            out = re.sub(r"@keyframes %s\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}\n?" % re.escape(name), "", out)
+    return out
 
 
 def render(page):
@@ -466,10 +619,8 @@ def render(page):
         '<link rel="sitemap" type="application/xml" href="/sitemap.xml">',
         '<link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>',
         '<meta name="apple-mobile-web-app-title" content="%s">' % BRAND,
-        "<style>%s</style>" % CSS,
-        '<script type="application/ld+json">%s</script>' % jsonld(page),
-        SPECULATION,
-        "</head>",
+    ]
+    body = [
         "<body>",
         '<a class="skip" href="#main">Ga naar inhoud</a>',
         '<div class="top"><header class="site-header"><div class="wrap header-in">'
@@ -478,7 +629,7 @@ def render(page):
         '<a class="btn btn-call btn-sm hide-sm" href="tel:%s">Bel %s</a></div></div></header>' % (WA_DEFAULT, PHONE_TEL, PHONE_DISPLAY),
         nav_html(path) + "</div>",
         '<main id="main">',
-        page_body(page),
+        polish(page_body(page)),
         "</main>",
         footer_html(),
         '<div class="bar" role="region" aria-label="Snel bestellen"><a class="btn btn-wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>'
@@ -488,7 +639,13 @@ def render(page):
         "</body>",
         "</html>",
     ]
-    return "\n".join(head) + "\n"
+    head += [
+        "<style>%s</style>" % prune_css(CSS, "\n".join(body)),
+        '<script type="application/ld+json">%s</script>' % jsonld(page),
+        speculation(path),
+        "</head>",
+    ]
+    return "\n".join(head + body) + "\n"
 
 
 def h1_html(text):
@@ -527,6 +684,7 @@ def hero(page, eyebrow, points=None, cta=True):
                 '<p class="fine">Uitsluitend voor volwassenen (18+). Gebruik lachgas altijd verantwoord en in overeenstemming met de geldende wet- en regelgeving.</p>'
                 % (WA_ORDER, PHONE_TEL, PHONE_DISPLAY))
     return ('<section class="hero" id="top" aria-labelledby="h1"><div class="wrap">%s<div class="hero-in">'
-            '<p class="eyebrow">%s</p><h1 id="h1">%s</h1>%s<p class="lead">%s</p>%s%s</div></div></section>'
+            '<p class="eyebrow">%s</p><h1 id="h1">%s</h1><p class="lead">%s</p>%s%s%s</div></div></section>'
             % (crumbs_html(page["crumbs"]) if page.get("crumbs_in_hero", True) and page["path"] != "/" else "",
-               esc(eyebrow), h1_html(page["h1"]), HORIZON, page["lead"], pts, ctas))
+               esc(eyebrow), h1_html(page["h1"]), page["lead"], pts, ctas,
+               HORIZON))  # in de broncode na de tekst (tekst komt eerder binnen); CSS (order) zet hem onder de kop
